@@ -1,0 +1,58 @@
+Terrarium Controller Firmware
+ESP32 WROOM-based controller for tropical carnivorous plant terrariums. Monitors environmental conditions and controls climate systems automatically, while reporting telemetry to LeafLab.
+
+Hardware
+Microcontroller
+ESP32 WROOM on Freenove Universal Breakout Board
+Sensors
+Sensor	Interface	Purpose
+SHT31-D	I2C (0x44)	Air temperature & humidity
+VEML7700	I2C (0x10)	Light level (lux)
+DS18B20	1-Wire	Soil temperature
+Capacitive Soil Moisture (x2)	Analog	Soil moisture levels
+TDS Meter	Analog	Water quality (local only)
+pH Sensor	Analog	Water acidity (local only)
+NTC Thermistor	Analog	Heater plate temperature feedback
+Outputs
+Device	Control Method	Purpose
+Circulation Fans (x2, parallel)	MOSFET + PWM	Air circulation / ventilation
+Heating Plate	MOSFET + PWM	Substrate heating
+SG90 Servos (x2)	PWM direct	Vent flaps (0-40°)
+Grow Lights	SSR (on/off)	12-hour light cycle
+Water Pump	SSR (on/off)	Automated watering
+Humidifier Modules (x2)	SSR (on/off)	Humidity control
+Wiring
+MOSFET Circuit (IRLZ44N) - For Fans & Heater
+ESP32 GPIO → 100-220Ω resistor → Gate
+Gate → 10kΩ resistor → GND (pull-down)
+Source → GND
+Drain → Load negative
+Load positive → 12V
+The pull-down resistor keeps outputs off during ESP32 boot when GPIOs float.
+
+Pin Assignments
+I2C:
+  GPIO21 → SDA (SHT31-D, VEML7700)
+  GPIO22 → SCL
+
+1-Wire:
+  GPIO4  → DS18B20 soil temp
+
+Analog Inputs (ADC1 only - ADC2 conflicts with WiFi):
+  GPIO32 → Soil moisture 1
+  GPIO33 → Soil moisture 2
+  GPIO34 → TDS meter
+  GPIO35 → pH sensor
+  GPIO36 → Heater thermistor
+
+PWM Outputs:
+  GPIO16 → Fans (MOSFET)
+  GPIO17 → Heater (MOSFET)
+  GPIO18 → Servo 1 (vent)
+  GPIO19 → Servo 2 (vent)
+
+SSR Outputs:
+  GPIO23 → Grow lights
+  GPIO25 → Water pump
+  GPIO26 → Humidifier 1
+  GPIO27 → Humidifier 2
